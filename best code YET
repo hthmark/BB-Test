@@ -39,6 +39,7 @@
       stateSelect.addEventListener('change', () => {
           const selectedState = stateSelect.value;
           populateCounties(data, selectedState);
+          updateResults(); // Update results when state changes
       });
   }
 
@@ -64,6 +65,7 @@
       countySelect.addEventListener('change', () => {
           const selectedCounty = countySelect.value;
           displayPopulation(data, selectedState, selectedCounty);
+          updateRevenue(); // Update revenue when county changes
       });
   }
 
@@ -87,8 +89,7 @@
       });
 
       industrySelect.addEventListener('change', () => {
-          const selectedIndustry = industrySelect.value;
-          updateRevenue(selectedIndustry);
+          updateRevenue(); // Update revenue when industry changes
       });
   }
 
@@ -110,8 +111,7 @@
       }
 
       commissionSelect.addEventListener('change', () => {
-          const selectedIndustry = document.getElementById('industry-select').value;
-          updateRevenue(selectedIndustry);
+          updateRevenue(); // Update revenue when commission changes
       });
   }
 
@@ -133,9 +133,12 @@
       return `$${parts.join('.')}`; // Rejoin and add dollar sign
   }
 
-  function updateRevenue(selectedIndustry) {
+  function updateRevenue() {
       const populationDisplay = document.getElementById('population-display');
       const population = parseInt(populationDisplay.dataset.population) || 0; // Retrieve stored population
+
+      const industrySelect = document.getElementById('industry-select');
+      const selectedIndustry = industrySelect.value;
 
       let totalRevenue = 0;
 
@@ -172,7 +175,7 @@
 
       // New logic to calculate adjusted final revenue range (last step)
       const adjustedFinalRevenueLow = finalRevenue * 0.025;
-      const adjustedFinalRevenueHigh = finalRevenue * 0.07;
+      const adjustedFinalRevenueHigh = finalRevenue * 0.1;
       const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
       adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenueLow)} - ${formatCurrency(adjustedFinalRevenueHigh)}`; // Format as currency
       adjustedFinalRevenueDisplay.style.display = 'block'; // Show adjusted final revenue display
@@ -184,4 +187,5 @@
       document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
   };
 </script>
+
 
