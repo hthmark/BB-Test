@@ -11,6 +11,7 @@
           const data = await response.json();
           populateStates(data);
           populateIndustries(data); // Populate industries on initial load
+          populateCommission(); // Populate commission dropdown
       } catch (error) {
           console.error('Error fetching JSON:', error);
       }
@@ -91,6 +92,29 @@
       });
   }
 
+  function populateCommission() {
+      const commissionSelect = document.getElementById('commission-select');
+      commissionSelect.innerHTML = ''; // Clear existing options
+
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select a commission';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      commissionSelect.appendChild(defaultOption);
+
+      for (let i = 1; i <= 25; i++) {
+          const option = document.createElement('option');
+          option.value = i; // Store the percentage as a value
+          option.textContent = `${i}%`;
+          commissionSelect.appendChild(option);
+      }
+
+      commissionSelect.addEventListener('change', () => {
+          const selectedIndustry = document.getElementById('industry-select').value;
+          updateRevenue(selectedIndustry);
+      });
+  }
+
   function displayPopulation(data, selectedState, selectedCounty) {
       const populationDisplay = document.getElementById('population-display');
       const populationData = data.find(item => item.State === selectedState && item.County === selectedCounty);
@@ -127,8 +151,16 @@
           totalRevenue = population * industryMultipliers[selectedIndustry];
       }
 
+      // Apply commission
+      const commissionSelect = document.getElementById('commission-select');
+      const commissionPercentage = parseInt(commissionSelect.value) || 0; // Get the commission percentage
+      const commissionMultiplier = commissionPercentage / 100; // Convert to a multiplier
+
       const revenueDisplay = document.getElementById('revenue-display');
-      revenueDisplay.textContent = `Total Revenue: $${totalRevenue.toFixed(2)}`;
+      revenueDisplay.textContent = `Total Revenue: $${(totalRevenue).toFixed(2)}`; // Show total revenue without commission
+
+      const finalRevenueDisplay = document.getElementById('final-revenue-display');
+      finalRevenueDisplay.textContent = `Final Revenue after Commission: $${(totalRevenue * commissionMultiplier).toFixed(2)}`; // Show final revenue after commission
   }
 
   // Fetch data when the page loads
@@ -136,3 +168,4 @@
       fetchData();
   };
 </script>
+
