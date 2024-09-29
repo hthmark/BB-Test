@@ -1,0 +1,138 @@
+<script>
+  // URL of the JSON file
+  const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/newbb.json';
+
+  async function fetchData() {
+      try {
+          const response = await fetch(dataJsonUrl);
+          if (!response.ok) {
+              throw new Error('Network response was not ok: ' + response.statusText);
+          }
+          const data = await response.json();
+          populateStates(data);
+          populateIndustries(data); // Populate industries on initial load
+      } catch (error) {
+          console.error('Error fetching JSON:', error);
+      }
+  }
+
+  function populateStates(data) {
+      const stateSelect = document.getElementById('state-select');
+      const states = [...new Set(data.map(item => item.State))];
+
+      stateSelect.innerHTML = ''; // Clear existing options
+
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select a state';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      stateSelect.appendChild(defaultOption);
+
+      states.forEach(state => {
+          const option = document.createElement('option');
+          option.value = state;
+          option.textContent = state;
+          stateSelect.appendChild(option);
+      });
+
+      stateSelect.addEventListener('change', () => {
+          const selectedState = stateSelect.value;
+          populateCounties(data, selectedState);
+      });
+  }
+
+  function populateCounties(data, selectedState) {
+      const countySelect = document.getElementById('county-select');
+      const counties = [...new Set(data.filter(item => item.State === selectedState).map(item => item.County))];
+
+      countySelect.innerHTML = ''; // Clear existing options
+
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select a county';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      countySelect.appendChild(defaultOption);
+
+      counties.forEach(county => {
+          const option = document.createElement('option');
+          option.value = county;
+          option.textContent = county;
+          countySelect.appendChild(option);
+      });
+
+      countySelect.addEventListener('change', () => {
+          const selectedCounty = countySelect.value;
+          displayPopulation(data, selectedState, selectedCounty);
+      });
+  }
+
+  function populateIndustries(data) {
+      const industrySelect = document.getElementById('industry-select');
+      const industries = [...new Set(data.map(item => item.Industry))];
+
+      industrySelect.innerHTML = ''; // Clear existing options
+
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select an industry';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      industrySelect.appendChild(defaultOption);
+
+      industries.forEach(industry => {
+          const option = document.createElement('option');
+          option.value = industry;
+          option.textContent = industry;
+          industrySelect.appendChild(option);
+      });
+
+      industrySelect.addEventListener('change', () => {
+          const selectedIndustry = industrySelect.value;
+          updateRevenue(selectedIndustry);
+      });
+  }
+
+  function displayPopulation(data, selectedState, selectedCounty) {
+      const populationDisplay = document.getElementById('population-display');
+      const populationData = data.find(item => item.State === selectedState && item.County === selectedCounty);
+
+      if (populationData) {
+          populationDisplay.textContent = `Population: ${populationData.Population}`;
+          populationDisplay.dataset.population = populationData.Population; // Store population for later use
+      } else {
+          populationDisplay.textContent = 'Population: N/A';
+      }
+  }
+
+  function updateRevenue(selectedIndustry) {
+      const populationDisplay = document.getElementById('population-display');
+      const population = parseInt(populationDisplay.dataset.population) || 0; // Retrieve stored population
+
+      let totalRevenue = 0;
+
+      // Set the multiplier based on the selected industry
+      const industryMultipliers = {
+          "Cardiology Devices": 76.94,
+          "Dental Devices": 22.10,
+          "Diabetes Care Devices": 34.96,
+          "Diagnostic Imaging Devices": 35.62,
+          "Drug Delivery Devices": 44.82,
+          "Endoscopic Devices": 31.02,
+          "General & Plastic Surgery Devices": 29.38,
+          "Ophthalmic Devices": 41.80,
+          "Orthopedic Devices": 47.83,
+          "Other Medical Devices": 35.62
+      };
+
+      if (industryMultipliers[selectedIndustry]) {
+          totalRevenue = population * industryMultipliers[selectedIndustry];
+      }
+
+      const revenueDisplay = document.getElementById('revenue-display');
+      revenueDisplay.textContent = `Total Revenue: $${totalRevenue.toFixed(2)}`;
+  }
+
+  // Fetch data when the page loads
+  window.onload = () => {
+      fetchData();
+  };
+</script>
