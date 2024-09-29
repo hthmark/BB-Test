@@ -10,9 +10,9 @@
           }
           const data = await response.json();
           populateStates(data);
-          populateIndustries(data); // Populate industries on initial load
-          populateCommission(); // Populate commission dropdown
-          populateTerritoryInheritance(); // Populate territory inheritance dropdown
+          populateIndustries(data);
+          populateCommission();
+          populateTerritoryInheritance();
       } catch (error) {
           console.error('Error fetching JSON:', error);
       }
@@ -23,7 +23,6 @@
       const states = [...new Set(data.map(item => item.State))];
 
       stateSelect.innerHTML = ''; // Clear existing options
-
       const defaultOption = document.createElement('option');
       defaultOption.textContent = 'Select a state';
       defaultOption.disabled = true;
@@ -49,7 +48,6 @@
       const counties = [...new Set(data.filter(item => item.State === selectedState).map(item => item.County))];
 
       countySelect.innerHTML = ''; // Clear existing options
-
       const defaultOption = document.createElement('option');
       defaultOption.textContent = 'Select a county';
       defaultOption.disabled = true;
@@ -75,7 +73,6 @@
       const industries = [...new Set(data.map(item => item.Industry))];
 
       industrySelect.innerHTML = ''; // Clear existing options
-
       const defaultOption = document.createElement('option');
       defaultOption.textContent = 'Select an industry';
       defaultOption.disabled = true;
@@ -89,15 +86,12 @@
           industrySelect.appendChild(option);
       });
 
-      industrySelect.addEventListener('change', () => {
-          updateRevenue(); // Update revenue when industry changes
-      });
+      industrySelect.addEventListener('change', updateRevenue); // Update revenue when industry changes
   }
 
   function populateCommission() {
       const commissionSelect = document.getElementById('commission-select');
       commissionSelect.innerHTML = ''; // Clear existing options
-
       const defaultOption = document.createElement('option');
       defaultOption.textContent = 'Select a commission';
       defaultOption.disabled = true;
@@ -106,23 +100,19 @@
 
       for (let i = 1; i <= 25; i++) {
           const option = document.createElement('option');
-          option.value = i; // Store the percentage as a value
+          option.value = i;
           option.textContent = `${i}%`;
           commissionSelect.appendChild(option);
       }
 
-      commissionSelect.addEventListener('change', () => {
-          updateRevenue(); // Update revenue when commission changes
-      });
+      commissionSelect.addEventListener('change', updateRevenue); // Update revenue when commission changes
   }
 
-  // New function to populate territory inheritance dropdown
   function populateTerritoryInheritance() {
       const territorySelect = document.getElementById('territory-inheritance-select');
       const options = ['New', 'Mixed', 'Established'];
 
       territorySelect.innerHTML = ''; // Clear existing options
-
       const defaultOption = document.createElement('option');
       defaultOption.textContent = 'Select Territory Inheritance';
       defaultOption.disabled = true;
@@ -131,14 +121,12 @@
 
       options.forEach(option => {
           const newOption = document.createElement('option');
-          newOption.value = option.toLowerCase(); // Store as lowercase
+          newOption.value = option.toLowerCase();
           newOption.textContent = option;
           territorySelect.appendChild(newOption);
       });
 
-      territorySelect.addEventListener('change', () => {
-          updateRevenue(); // Update revenue when territory inheritance changes
-      });
+      territorySelect.addEventListener('change', updateRevenue); // Update revenue on change
   }
 
   function displayPopulation(data, selectedState, selectedCounty) {
@@ -154,21 +142,20 @@
   }
 
   function formatCurrency(value) {
-      const parts = value.toFixed(2).split('.'); // Split into whole and decimal parts
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Format the whole part with commas
-      return `$${parts.join('.')}`; // Rejoin and add dollar sign
+      const parts = value.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return `$${parts.join('.')}`;
   }
 
   function updateRevenue() {
       const populationDisplay = document.getElementById('population-display');
-      const population = parseInt(populationDisplay.dataset.population) || 0; // Retrieve stored population
+      const population = parseInt(populationDisplay.dataset.population) || 0;
 
       const industrySelect = document.getElementById('industry-select');
       const selectedIndustry = industrySelect.value;
 
       let totalRevenue = 0;
 
-      // Set the multiplier based on the selected industry
       const industryMultipliers = {
           "Cardiology Devices": 76.94,
           "Dental Devices": 22.10,
@@ -186,30 +173,29 @@
           totalRevenue = population * industryMultipliers[selectedIndustry];
       }
 
-      // Apply commission
       const commissionSelect = document.getElementById('commission-select');
-      const commissionPercentage = parseInt(commissionSelect.value) || 0; // Get the commission percentage
-      const commissionMultiplier = commissionPercentage / 100; // Convert to a multiplier
-
-      const revenueDisplay = document.getElementById('revenue-display');
-      revenueDisplay.style.display = 'none'; // Hide total revenue display
-
-      const finalRevenueDisplay = document.getElementById('final-revenue-display');
-      finalRevenueDisplay.style.display = 'none'; // Hide final revenue display
+      const commissionPercentage = parseInt(commissionSelect.value) || 0;
+      const commissionMultiplier = commissionPercentage / 100;
 
       const finalRevenue = totalRevenue * commissionMultiplier;
 
-      // New logic to calculate adjusted final revenue range (last step)
-      const adjustedFinalRevenueLow = finalRevenue * 0.025;
-      const adjustedFinalRevenueHigh = finalRevenue * 0.1;
+      // Final step: Adjust based on territory selection
+      const territorySelect = document.getElementById('territory-inheritance-select');
+      const selectedTerritory = territorySelect.value;
+
+      let adjustedFinalRevenue = finalRevenue; // Start with final revenue
+      if (selectedTerritory === "new") {
+          adjustedFinalRevenue *= 0.025; // Adjust for "New"
+      }
+
       const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
-      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenueLow)} - ${formatCurrency(adjustedFinalRevenueHigh)}`; // Format as currency
-      adjustedFinalRevenueDisplay.style.display = 'block'; // Show adjusted final revenue display
+      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenue)}`;
+      adjustedFinalRevenueDisplay.style.display = 'block';
   }
 
-  // Fetch data when the page loads
   window.onload = () => {
       fetchData();
       document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
   };
 </script>
+
