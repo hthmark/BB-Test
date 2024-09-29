@@ -196,7 +196,7 @@
       }
 
       const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
-      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenue)}`;
+      adjustedFinalRevenueDisplay.textContent = `Estimated Compensation: ${formatCurrency(adjustedFinalRevenue)}`;
       adjustedFinalRevenueDisplay.style.display = 'block';
   }
 
@@ -208,6 +208,3 @@
       document.getElementById('final-revenue-display').style.display = 'none'; // Hide final revenue display
   };
 </script>
-
-
-
