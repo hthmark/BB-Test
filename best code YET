@@ -186,6 +186,10 @@
       let adjustedFinalRevenue = finalRevenue; // Start with final revenue
       if (selectedTerritory === "new") {
           adjustedFinalRevenue *= 0.025; // Adjust for "New"
+      } else if (selectedTerritory === "mixed") {
+          adjustedFinalRevenue *= 0.04; // Adjust for "Mixed"
+      } else if (selectedTerritory === "established") {
+          adjustedFinalRevenue *= 0.07; // Adjust for "Established"
       }
 
       const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
@@ -198,4 +202,5 @@
       document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
   };
 </script>
+
 
