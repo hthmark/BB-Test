@@ -139,6 +139,9 @@
       } else {
           populationDisplay.textContent = 'Population: N/A';
       }
+
+      // Hide the population display
+      populationDisplay.style.display = 'none';
   }
 
   function formatCurrency(value) {
@@ -200,7 +203,11 @@
   window.onload = () => {
       fetchData();
       document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
+      document.getElementById('population-display').style.display = 'none'; // Hide population display
+      document.getElementById('revenue-display').style.display = 'none'; // Hide revenue display
+      document.getElementById('final-revenue-display').style.display = 'none'; // Hide final revenue display
   };
 </script>
+
 
 
