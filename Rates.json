@@ -1,0 +1,62 @@
+[
+  {
+    "Industry": "Cardiology Devices",
+    "Revenue by Industry per person": "$76.94",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Dental Devices",
+    "Revenue by Industry per person": "$22.10",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Diabetes Care Devices",
+    "Revenue by Industry per person": "$34.96",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Diagnostic Imaging Devices",
+    "Revenue by Industry per person": "$35.62",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Drug Delivery Devices",
+    "Revenue by Industry per person": "$44.82",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Endoscopic Devices",
+    "Revenue by Industry per person": "$31.02",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "General & Plastic Surgery Devices",
+    "Revenue by Industry per person": "$29.38",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Ophthalmic Devices",
+    "Revenue by Industry per person": "$41.80",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Orthopedic Devices",
+    "Revenue by Industry per person": "$47.83",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  },
+  {
+    "Industry": "Other Medical Devices",
+    "Revenue by Industry per person": "$35.62",
+    "Prevalence Rate": 0.1,
+    "Commission": 0.1
+  }
+]
