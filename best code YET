@@ -12,6 +12,7 @@
           populateStates(data);
           populateIndustries(data); // Populate industries on initial load
           populateCommission(); // Populate commission dropdown
+          populateTerritoryInheritance(); // Populate territory inheritance dropdown
       } catch (error) {
           console.error('Error fetching JSON:', error);
       }
@@ -115,6 +116,31 @@
       });
   }
 
+  // New function to populate territory inheritance dropdown
+  function populateTerritoryInheritance() {
+      const territorySelect = document.getElementById('territory-inheritance-select');
+      const options = ['New', 'Mixed', 'Established'];
+
+      territorySelect.innerHTML = ''; // Clear existing options
+
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select Territory Inheritance';
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      territorySelect.appendChild(defaultOption);
+
+      options.forEach(option => {
+          const newOption = document.createElement('option');
+          newOption.value = option.toLowerCase(); // Store as lowercase
+          newOption.textContent = option;
+          territorySelect.appendChild(newOption);
+      });
+
+      territorySelect.addEventListener('change', () => {
+          updateRevenue(); // Update revenue when territory inheritance changes
+      });
+  }
+
   function displayPopulation(data, selectedState, selectedCounty) {
       const populationDisplay = document.getElementById('population-display');
       const populationData = data.find(item => item.State === selectedState && item.County === selectedCounty);
@@ -187,5 +213,3 @@
       document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
   };
 </script>
-
-
