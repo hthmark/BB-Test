@@ -127,6 +127,12 @@
       }
   }
 
+  function formatCurrency(value) {
+      const parts = value.toFixed(2).split('.'); // Split into whole and decimal parts
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ","); // Format the whole part with commas
+      return `$${parts.join('.')}`; // Rejoin and add dollar sign
+  }
+
   function updateRevenue(selectedIndustry) {
       const populationDisplay = document.getElementById('population-display');
       const population = parseInt(populationDisplay.dataset.population) || 0; // Retrieve stored population
@@ -157,22 +163,23 @@
       const commissionMultiplier = commissionPercentage / 100; // Convert to a multiplier
 
       const revenueDisplay = document.getElementById('revenue-display');
-      revenueDisplay.textContent = `Total Revenue: $${(totalRevenue).toFixed(2)}`; // Show total revenue without commission
+      revenueDisplay.style.display = 'none'; // Hide total revenue display
 
       const finalRevenueDisplay = document.getElementById('final-revenue-display');
+      finalRevenueDisplay.style.display = 'none'; // Hide final revenue display
+
       const finalRevenue = totalRevenue * commissionMultiplier;
-      finalRevenueDisplay.textContent = `Final Revenue after Commission: $${(finalRevenue).toFixed(2)}`; // Show final revenue after commission
 
       // New logic to calculate adjusted final revenue (last step)
       const adjustedFinalRevenue = finalRevenue * 0.1;
       const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
-      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: $${(adjustedFinalRevenue).toFixed(2)}`;
+      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenue)}`; // Format as currency
+      adjustedFinalRevenueDisplay.style.display = 'block'; // Show adjusted final revenue display
   }
 
   // Fetch data when the page loads
   window.onload = () => {
       fetchData();
+      document.getElementById('adjusted-final-revenue-display').style.display = 'none'; // Hide on initial load
   };
 </script>
-
-
