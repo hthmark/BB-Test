@@ -160,7 +160,13 @@
       revenueDisplay.textContent = `Total Revenue: $${(totalRevenue).toFixed(2)}`; // Show total revenue without commission
 
       const finalRevenueDisplay = document.getElementById('final-revenue-display');
-      finalRevenueDisplay.textContent = `Final Revenue after Commission: $${(totalRevenue * commissionMultiplier).toFixed(2)}`; // Show final revenue after commission
+      const finalRevenue = totalRevenue * commissionMultiplier;
+      finalRevenueDisplay.textContent = `Final Revenue after Commission: $${(finalRevenue).toFixed(2)}`; // Show final revenue after commission
+
+      // New logic to calculate adjusted final revenue (last step)
+      const adjustedFinalRevenue = finalRevenue * 0.1;
+      const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
+      adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: $${(adjustedFinalRevenue).toFixed(2)}`;
   }
 
   // Fetch data when the page loads
@@ -168,4 +174,5 @@
       fetchData();
   };
 </script>
+
 
