@@ -1,0 +1,58 @@
+<script>
+  $(document).ready(function() {
+      const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
+
+      async function fetchData() {
+          try {
+              const response = await fetch(dataJsonUrl);
+              if (!response.ok) {
+                  throw new Error('Network response was not ok: ' + response.statusText);
+              }
+              const data = await response.json();
+              populateStates(data);
+          } catch (error) {
+              console.error('Error fetching JSON:', error);
+          }
+      }
+
+      function populateStates(data) {
+          const dropdownList = $('#state-dropdown .w-dropdown-list'); // Access the dropdown list
+
+          // Clear existing options
+          dropdownList.empty();
+
+          // Add a default option
+          dropdownList.append('<div class="w-dropdown-option" data-value="" role="option" aria-selected="false">Select a state</div>');
+
+          // Get unique states
+          const states = [...new Set(data.map(item => item.State))];
+          
+          // Populate the dropdown with states
+          states.forEach(state => {
+              dropdownList.append(`<div class="w-dropdown-option" data-value="${state}" role="option" aria-selected="false">${state}</div>`);
+          });
+
+          // Handle option click
+          dropdownList.find('.w-dropdown-option').on('click', function() {
+              const selectedValue = $(this).text();
+              $('#state-dropdown .w-dropdown-toggle').text(selectedValue); // Update the toggle text
+              dropdownList.hide(); // Hide the dropdown list
+          });
+
+          // Show dropdown list on toggle click
+          $('#state-dropdown .w-dropdown-toggle').on('click', function() {
+              dropdownList.toggle(); // Show/hide dropdown list
+          });
+
+          // Hide dropdown when clicking outside
+          $(document).on('click', function(event) {
+              if (!$(event.target).closest('#state-dropdown').length) {
+                  dropdownList.hide(); // Hide if clicked outside
+              }
+          });
+      }
+
+      // Fetch data when the page loads
+      fetchData();
+  });
+</script>
