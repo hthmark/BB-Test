@@ -10,12 +10,20 @@
     <!-- Industries will be populated here -->
 </select>
 
+<select id="commission-select">
+    <!-- Commission percentages will be populated here -->
+</select>
+
 <h1 id="population-display">
     <!-- Population will be displayed here -->
 </h1>
 
 <h1 id="revenue-display">
     <!-- Revenue will be displayed here -->
+</h1>
+
+<h1 id="final-revenue-display">
+    <!-- Final revenue will be displayed here -->
 </h1>
 
 <script>
@@ -28,6 +36,7 @@
         if (countyData && revenueData) {
             populateStates(countyData);
             populateIndustries(revenueData);
+            populateCommission();
         }
     };
 
@@ -112,7 +121,27 @@
         industrySelect.addEventListener('change', () => {
             const selectedCounty = document.getElementById('county-select').value;
             updateRevenue(data, document.getElementById('state-select').value, selectedCounty);
+            updateFinalRevenue();
         });
+    }
+
+    function populateCommission() {
+        const commissionSelect = document.getElementById('commission-select');
+        commissionSelect.innerHTML = '';
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = 'Select commission';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        commissionSelect.appendChild(defaultOption);
+
+        for (let i = 1; i <= 25; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i}%`;
+            commissionSelect.appendChild(option);
+        }
+
+        commissionSelect.addEventListener('change', updateFinalRevenue);
     }
 
     function displayPopulation(data, selectedState, selectedCounty) {
@@ -153,9 +182,20 @@
         revenueDisplay.textContent = `Revenue: ${formatCurrency(totalRevenue)}`;
     }
 
+    function updateFinalRevenue() {
+        const revenueDisplay = document.getElementById('revenue-display').textContent;
+        const revenue = parseFloat(revenueDisplay.replace(/[^\d.-]+/g, '')) || 0;
+
+        const commissionSelect = document.getElementById('commission-select');
+        const commissionPercentage = parseInt(commissionSelect.value) || 0;
+
+        const finalRevenue = revenue * (commissionPercentage / 100);
+
+        const finalRevenueDisplay = document.getElementById('final-revenue-display');
+        finalRevenueDisplay.textContent = `Final Revenue: ${formatCurrency(finalRevenue)}`;
+    }
+
     function formatCurrency(value) {
         return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     }
 </script>
-
-
