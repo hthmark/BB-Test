@@ -1,0 +1,223 @@
+<select id="state-select" style="display:none;">
+    <!-- States will be populated here -->
+</select>
+
+<select id="county-select" style="display:none;">
+    <!-- Counties will be populated here -->
+</select>
+
+<select id="industry-select" style="display:none;">
+    <!-- Industries will be populated here -->
+</select>
+
+<select id="commission-select" style="display:none;">
+    <!-- Commission percentages will be populated here -->
+</select>
+
+<h1 id="population-display" style="display:none;">
+    <!-- Population will be displayed here -->
+</h1>
+
+<h1 id="revenue-display" style="display:none;">
+    <!-- Revenue will be displayed here -->
+</h1>
+
+<h1 id="final-revenue-display" style="display:none;">
+    <!-- Final revenue will be displayed here -->
+</h1>
+
+<h1 id="adjusted-final-revenue-display" style="display:none;">
+    $0
+</h1>
+
+<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular" style="display:none;">
+
+<script>
+    const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
+    const revenueJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/newbb.json';
+
+    window.onload = async () => {
+        const countyData = await fetchData(dataJsonUrl);
+        const revenueData = await fetchData(revenueJsonUrl);
+        if (countyData && revenueData) {
+            populateStates(countyData);
+            populateIndustries(revenueData);
+            populateCommission();
+            populateTerritoryInheritance();
+        }
+    };
+
+    async function fetchData(url) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.statusText);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching JSON:', error);
+        }
+    }
+
+    function populateStates(data) {
+        const stateSelect = document.getElementById('state-select');
+        const states = [...new Set(data.map(item => item.State))];
+
+        stateSelect.innerHTML = '<option disabled selected>Select a state</option>';
+        states.forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
+
+        stateSelect.addEventListener('change', () => {
+            const selectedState = stateSelect.value;
+            populateCounties(data, selectedState);
+        });
+    }
+
+    function populateCounties(data, selectedState) {
+        const countySelect = document.getElementById('county-select');
+        const counties = [...new Set(data.filter(item => item.State === selectedState).map(item => item.County))];
+
+        countySelect.innerHTML = '<option disabled selected>Select a county</option>';
+        counties.forEach(county => {
+            const option = document.createElement('option');
+            option.value = county;
+            option.textContent = county;
+            countySelect.appendChild(option);
+        });
+
+        countySelect.addEventListener('change', () => {
+            const selectedCounty = countySelect.value;
+            displayPopulation(data, selectedState, selectedCounty);
+            updateRevenue(data, selectedState, selectedCounty);
+        });
+    }
+
+    function populateIndustries(data) {
+        const industrySelect = document.getElementById('industry-select');
+        industrySelect.innerHTML = '<option disabled selected>Select an industry</option>';
+
+        const industries = [...new Set(data.map(item => item.Industry))];
+        industries.forEach(industry => {
+            const option = document.createElement('option');
+            option.value = industry;
+            option.textContent = industry;
+            industrySelect.appendChild(option);
+        });
+
+        industrySelect.addEventListener('change', () => {
+            const selectedCounty = document.getElementById('county-select').value;
+            updateRevenue(data, document.getElementById('state-select').value, selectedCounty);
+        });
+    }
+
+    function populateCommission() {
+        const commissionSelect = document.getElementById('commission-select');
+        commissionSelect.innerHTML = '<option disabled selected>Select commission</option>';
+
+        for (let i = 1; i <= 25; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i}%`;
+            commissionSelect.appendChild(option);
+        }
+    }
+
+    function populateTerritoryInheritance() {
+        const territorySelect = document.getElementById('territory-inheritance-select');
+        territorySelect.addEventListener('change', () => {
+            const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
+            adjustedFinalRevenueDisplay.textContent = '$0'; // Reset to $0 when selection changes
+            adjustedFinalRevenueDisplay.style.display = 'block'; // Ensure it's visible
+        });
+    }
+
+    function displayPopulation(data, selectedState, selectedCounty) {
+        const populationDisplay = document.getElementById('population-display');
+        const populationData = data.find(item => item.State === selectedState && item.County === selectedCounty);
+
+        if (populationData) {
+            populationDisplay.textContent = `Population: ${populationData.Population}`;
+            populationDisplay.style.display = 'none'; // Always hide population display
+        } else {
+            populationDisplay.textContent = 'Population: N/A';
+            populationDisplay.style.display = 'none'; // Always hide population display
+        }
+    }
+
+    function updateRevenue(countyData, selectedState, selectedCounty) {
+        const populationDisplay = document.getElementById('population-display');
+        const population = parseInt(populationDisplay.textContent.replace(/\D/g, '')) || 0;
+
+        const industrySelect = document.getElementById('industry-select');
+        const selectedIndustry = industrySelect.value;
+
+        const revenueData = {
+            "Cardiology Devices": 76.94,
+            "Dental Devices": 22.10,
+            "Diabetes Care Devices": 34.96,
+            "Diagnostic Imaging Devices": 35.62,
+            "Drug Delivery Devices": 44.82,
+            "Endoscopic Devices": 31.02,
+            "General & Plastic Surgery Devices": 29.38,
+            "Ophthalmic Devices": 41.80,
+            "Orthopedic Devices": 47.83,
+            "Other Medical Devices": 35.62
+        };
+
+        const revenuePerPerson = revenueData[selectedIndustry] || 0;
+        const totalRevenue = population * revenuePerPerson;
+
+        const revenueDisplay = document.getElementById('revenue-display');
+        revenueDisplay.textContent = `Revenue: ${formatCurrency(totalRevenue)}`;
+        revenueDisplay.style.display = 'none'; // Always hide revenue display
+    }
+
+    function updateFinalRevenue() {
+        const revenueDisplay = document.getElementById('revenue-display').textContent;
+        const revenue = parseFloat(revenueDisplay.replace(/[^\d.-]+/g, '')) || 0;
+
+        const commissionSelect = document.getElementById('commission-select');
+        const commissionPercentage = parseInt(commissionSelect.value) || 0;
+
+        const finalRevenue = revenue * (commissionPercentage / 100);
+
+        const finalRevenueDisplay = document.getElementById('final-revenue-display');
+        finalRevenueDisplay.textContent = `Final Revenue: ${formatCurrency(finalRevenue)}`;
+        finalRevenueDisplay.style.display = 'none'; // Always hide final revenue display
+    }
+
+    function updateAdjustedFinalRevenue() {
+        const finalRevenueDisplay = document.getElementById('final-revenue-display').textContent;
+        const finalRevenue = parseFloat(finalRevenueDisplay.replace(/[^\d.-]+/g, '')) || 0;
+
+        const territorySelect = document.getElementById('territory-inheritance-select');
+        const selectedTerritory = territorySelect.value;
+
+        let adjustedFinalRevenue = 0;
+
+        if (selectedTerritory === "New") {
+            adjustedFinalRevenue = finalRevenue * 0.025; // Multiply by 0.025 if "New" is selected
+        } else if (selectedTerritory === "Mixed") {
+            adjustedFinalRevenue = finalRevenue * 0.04; // Multiply by 0.04 if "Mixed" is selected
+        } else if (selectedTerritory === "Established") {
+            adjustedFinalRevenue = finalRevenue * 0.07; // Multiply by 0.07 if "Established" is selected
+        }
+
+        const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
+        adjustedFinalRevenueDisplay.textContent = formatCurrency(adjustedFinalRevenue); // Display only the dollar value
+        adjustedFinalRevenueDisplay.style.display = 'block'; // Show adjusted final revenue display
+    }
+
+    document.getElementById('calculate-button').addEventListener('click', () => {
+        updateFinalRevenue(); // Calculate and show final revenue when button is clicked
+        updateAdjustedFinalRevenue(); // Calculate and show adjusted final revenue when button is clicked
+    });
+
+    function formatCurrency(value) {
+        return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    }
+</script>
