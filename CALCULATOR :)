@@ -69,5 +69,23 @@
             option.textContent = county;
             countySelect.appendChild(option);
         });
+
+        // Add change event listener for counties
+        countySelect.addEventListener('change', () => {
+            const selectedCounty = countySelect.value;
+            displayPopulation(data, selectedState, selectedCounty);
+        });
+    }
+
+    function displayPopulation(data, selectedState, selectedCounty) {
+        const populationDisplay = document.getElementById('population-display');
+        const populationData = data.find(item => item.State === selectedState && item.County === selectedCounty);
+
+        if (populationData) {
+            populationDisplay.textContent = `Population: ${populationData.Population}`;
+        } else {
+            populationDisplay.textContent = 'Population: N/A';
+        }
     }
 </script>
+
