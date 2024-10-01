@@ -26,11 +26,11 @@
     <!-- Final revenue will be displayed here -->
 </h1>
 
-<h1 id="adjusted-final-revenue-display">
+<h1 id="adjusted-final-revenue-display" style="display:none;">
     $0
 </h1>
 
-<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular">
+<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular" style="display:none;">
 
 <script>
     const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
