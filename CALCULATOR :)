@@ -16,31 +16,33 @@
 
 <select id="territory-inheritance-select">
     <option value="">Select territory inheritance</option>
-    <option value="new">New</option>
-    <option value="mixed">Mixed</option>
-    <option value="established">Established</option>
-    <option value="existing">Existing</option>
+    <option value="New">New</option>
+    <option value="Mixed">Mixed</option>
+    <option value="Established">Established</option>
+    <option value="Existing">Existing</option>
 </select>
 
-<h1 id="population-display">
+<h1 id="population-display" style="display:none;">
     <!-- Population will be displayed here -->
 </h1>
 
-<h1 id="revenue-display">
+<h1 id="revenue-display" style="display:none;">
     <!-- Revenue will be displayed here -->
 </h1>
 
-<h1 id="final-revenue-display">
+<h1 id="final-revenue-display" style="display:none;">
     <!-- Final revenue will be displayed here -->
 </h1>
 
-<h1 id="adjusted-final-revenue-display">
+<h1 id="adjusted-final-revenue-display" style="display:none;">
     <!-- Adjusted final revenue will be displayed here -->
 </h1>
 
+<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular">
+
 <script>
     const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
-    const revenueJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/newbb.json'; // URL for industry revenue data
+    const revenueJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/newbb.json';
 
     window.onload = async () => {
         const countyData = await fetchData(dataJsonUrl);
@@ -99,8 +101,6 @@
             const selectedCounty = countySelect.value;
             displayPopulation(data, selectedState, selectedCounty);
             updateRevenue(data, selectedState, selectedCounty);
-            updateFinalRevenue();
-            updateAdjustedFinalRevenue(); // Ensure all calculations are updated
         });
     }
 
@@ -119,8 +119,6 @@
         industrySelect.addEventListener('change', () => {
             const selectedCounty = document.getElementById('county-select').value;
             updateRevenue(data, document.getElementById('state-select').value, selectedCounty);
-            updateFinalRevenue();
-            updateAdjustedFinalRevenue(); // Update adjusted final revenue when industry changes
         });
     }
 
@@ -134,16 +132,13 @@
             option.textContent = `${i}%`;
             commissionSelect.appendChild(option);
         }
-
-        commissionSelect.addEventListener('change', () => {
-            updateFinalRevenue();
-            updateAdjustedFinalRevenue(); // Update adjusted final revenue when commission changes
-        });
     }
 
     function populateTerritoryInheritance() {
         const territorySelect = document.getElementById('territory-inheritance-select');
-        territorySelect.addEventListener('change', updateAdjustedFinalRevenue);
+        territorySelect.addEventListener('change', () => {
+            document.getElementById('adjusted-final-revenue-display').style.display = 'none';
+        });
     }
 
     function displayPopulation(data, selectedState, selectedCounty) {
@@ -152,8 +147,10 @@
 
         if (populationData) {
             populationDisplay.textContent = `Population: ${populationData.Population}`;
+            populationDisplay.style.display = 'block'; // Show population display
         } else {
             populationDisplay.textContent = 'Population: N/A';
+            populationDisplay.style.display = 'block'; // Show population display
         }
     }
 
@@ -182,6 +179,7 @@
 
         const revenueDisplay = document.getElementById('revenue-display');
         revenueDisplay.textContent = `Revenue: ${formatCurrency(totalRevenue)}`;
+        revenueDisplay.style.display = 'block'; // Show revenue display
     }
 
     function updateFinalRevenue() {
@@ -195,8 +193,7 @@
 
         const finalRevenueDisplay = document.getElementById('final-revenue-display');
         finalRevenueDisplay.textContent = `Final Revenue: ${formatCurrency(finalRevenue)}`;
-
-        updateAdjustedFinalRevenue(); // Ensure adjusted final revenue is updated
+        finalRevenueDisplay.style.display = 'block'; // Show final revenue display
     }
 
     function updateAdjustedFinalRevenue() {
@@ -209,18 +206,25 @@
         let adjustedFinalRevenue = 0;
 
         if (selectedTerritory === "New") {
-            adjustedFinalRevenue = finalRevenue * 0.025; // Multiply by 0.025 if "new" is selected
+            adjustedFinalRevenue = finalRevenue * 0.025; // Multiply by 0.025 if "New" is selected
         } else if (selectedTerritory === "Mixed") {
-            adjustedFinalRevenue = finalRevenue * 0.04; // Multiply by 0.04 if "mixed" is selected
+            adjustedFinalRevenue = finalRevenue * 0.04; // Multiply by 0.04 if "Mixed" is selected
         } else if (selectedTerritory === "Established") {
-            adjustedFinalRevenue = finalRevenue * 0.07; // Multiply by 0.07 if "established" is selected
+            adjustedFinalRevenue = finalRevenue * 0.07; // Multiply by 0.07 if "Established" is selected
         }
 
         const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
-        adjustedFinalRevenueDisplay.textContent = `Adjusted Final Revenue: ${formatCurrency(adjustedFinalRevenue)}`;
+        adjustedFinalRevenueDisplay.textContent = formatCurrency(adjustedFinalRevenue); // Display only the dollar value
+        adjustedFinalRevenueDisplay.style.display = 'block'; // Show adjusted final revenue display
     }
+
+    document.getElementById('calculate-button').addEventListener('click', () => {
+        updateFinalRevenue(); // Calculate and show final revenue when button is clicked
+        updateAdjustedFinalRevenue(); // Calculate and show adjusted final revenue when button is clicked
+    });
 
     function formatCurrency(value) {
         return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     }
 </script>
+
