@@ -34,8 +34,8 @@
     <!-- Final revenue will be displayed here -->
 </h1>
 
-<h1 id="adjusted-final-revenue-display" style="display:none;">
-    <!-- Adjusted final revenue will be displayed here -->
+<h1 id="adjusted-final-revenue-display">
+    $0
 </h1>
 
 <input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular">
@@ -227,4 +227,5 @@
         return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     }
 </script>
+
 
