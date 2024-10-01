@@ -1,19 +1,39 @@
+<select id="state-select">
+    <!-- States will be populated here -->
+</select>
+
+<select id="county-select">
+    <!-- Counties will be populated here -->
+</select>
+
+<select id="industry-select">
+    <!-- Industries will be populated here -->
+</select>
+
+<h1 id="population-display">
+    <!-- Population will be displayed here -->
+</h1>
+
+<h1 id="revenue-display">
+    <!-- Revenue will be displayed here -->
+</h1>
 
 <script>
-    // URL of the JSON file
     const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
+    const revenueJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/newbb.json'; // URL for industry revenue data
 
-    // Fetch data when the page loads
     window.onload = async () => {
-        const data = await fetchData();
-        if (data) {
-            populateStates(data);
+        const countyData = await fetchData(dataJsonUrl);
+        const revenueData = await fetchData(revenueJsonUrl);
+        if (countyData && revenueData) {
+            populateStates(countyData);
+            populateIndustries(revenueData);
         }
     };
 
-    async function fetchData() {
+    async function fetchData(url) {
         try {
-            const response = await fetch(dataJsonUrl);
+            const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok: ' + response.statusText);
             }
@@ -27,7 +47,6 @@
         const stateSelect = document.getElementById('state-select');
         const states = [...new Set(data.map(item => item.State))];
 
-        // Clear existing options
         stateSelect.innerHTML = '';
         const defaultOption = document.createElement('option');
         defaultOption.textContent = 'Select a state';
@@ -35,7 +54,6 @@
         defaultOption.selected = true;
         stateSelect.appendChild(defaultOption);
 
-        // Populate states
         states.forEach(state => {
             const option = document.createElement('option');
             option.value = state;
@@ -43,7 +61,6 @@
             stateSelect.appendChild(option);
         });
 
-        // Add change event listener
         stateSelect.addEventListener('change', () => {
             const selectedState = stateSelect.value;
             populateCounties(data, selectedState);
@@ -54,7 +71,6 @@
         const countySelect = document.getElementById('county-select');
         const counties = [...new Set(data.filter(item => item.State === selectedState).map(item => item.County))];
 
-        // Clear existing options
         countySelect.innerHTML = '';
         const defaultOption = document.createElement('option');
         defaultOption.textContent = 'Select a county';
@@ -62,7 +78,6 @@
         defaultOption.selected = true;
         countySelect.appendChild(defaultOption);
 
-        // Populate counties
         counties.forEach(county => {
             const option = document.createElement('option');
             option.value = county;
@@ -70,10 +85,33 @@
             countySelect.appendChild(option);
         });
 
-        // Add change event listener for counties
         countySelect.addEventListener('change', () => {
             const selectedCounty = countySelect.value;
             displayPopulation(data, selectedState, selectedCounty);
+            updateRevenue(data, selectedState, selectedCounty);
+        });
+    }
+
+    function populateIndustries(data) {
+        const industrySelect = document.getElementById('industry-select');
+        industrySelect.innerHTML = '';
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = 'Select an industry';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        industrySelect.appendChild(defaultOption);
+
+        const industries = [...new Set(data.map(item => item.Industry))];
+        industries.forEach(industry => {
+            const option = document.createElement('option');
+            option.value = industry;
+            option.textContent = industry;
+            industrySelect.appendChild(option);
+        });
+
+        industrySelect.addEventListener('change', () => {
+            const selectedCounty = document.getElementById('county-select').value;
+            updateRevenue(data, document.getElementById('state-select').value, selectedCounty);
         });
     }
 
@@ -87,5 +125,37 @@
             populationDisplay.textContent = 'Population: N/A';
         }
     }
+
+    function updateRevenue(countyData, selectedState, selectedCounty) {
+        const populationDisplay = document.getElementById('population-display');
+        const population = parseInt(populationDisplay.textContent.replace(/\D/g, '')) || 0;
+
+        const industrySelect = document.getElementById('industry-select');
+        const selectedIndustry = industrySelect.value;
+
+        const revenueData = {
+            "Cardiology Devices": 76.94,
+            "Dental Devices": 22.10,
+            "Diabetes Care Devices": 34.96,
+            "Diagnostic Imaging Devices": 35.62,
+            "Drug Delivery Devices": 44.82,
+            "Endoscopic Devices": 31.02,
+            "General & Plastic Surgery Devices": 29.38,
+            "Ophthalmic Devices": 41.80,
+            "Orthopedic Devices": 47.83,
+            "Other Medical Devices": 35.62
+        };
+
+        const revenuePerPerson = revenueData[selectedIndustry] || 0;
+        const totalRevenue = population * revenuePerPerson;
+
+        const revenueDisplay = document.getElementById('revenue-display');
+        revenueDisplay.textContent = `Revenue: ${formatCurrency(totalRevenue)}`;
+    }
+
+    function formatCurrency(value) {
+        return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+    }
 </script>
+
 
