@@ -99,6 +99,8 @@
             const selectedCounty = countySelect.value;
             displayPopulation(data, selectedState, selectedCounty);
             updateRevenue(data, selectedState, selectedCounty);
+            updateFinalRevenue();
+            updateAdjustedFinalRevenue(); // Ensure all calculations are updated
         });
     }
 
@@ -118,6 +120,7 @@
             const selectedCounty = document.getElementById('county-select').value;
             updateRevenue(data, document.getElementById('state-select').value, selectedCounty);
             updateFinalRevenue();
+            updateAdjustedFinalRevenue(); // Update adjusted final revenue when industry changes
         });
     }
 
@@ -132,7 +135,10 @@
             commissionSelect.appendChild(option);
         }
 
-        commissionSelect.addEventListener('change', updateFinalRevenue);
+        commissionSelect.addEventListener('change', () => {
+            updateFinalRevenue();
+            updateAdjustedFinalRevenue(); // Update adjusted final revenue when commission changes
+        });
     }
 
     function populateTerritoryInheritance() {
@@ -218,4 +224,3 @@
         return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     }
 </script>
-
