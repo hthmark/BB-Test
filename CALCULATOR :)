@@ -1,25 +1,17 @@
-<select id="state-select">
+<select id="state-select" style="display:none;">
     <!-- States will be populated here -->
 </select>
 
-<select id="county-select">
+<select id="county-select" style="display:none;">
     <!-- Counties will be populated here -->
 </select>
 
-<select id="industry-select">
+<select id="industry-select" style="display:none;">
     <!-- Industries will be populated here -->
 </select>
 
-<select id="commission-select">
+<select id="commission-select" style="display:none;">
     <!-- Commission percentages will be populated here -->
-</select>
-
-<select id="territory-inheritance-select">
-    <option value="">Select territory inheritance</option>
-    <option value="New">New</option>
-    <option value="Mixed">Mixed</option>
-    <option value="Established">Established</option>
-    <option value="Existing">Existing</option>
 </select>
 
 <h1 id="population-display" style="display:none;">
@@ -34,11 +26,11 @@
     <!-- Final revenue will be displayed here -->
 </h1>
 
-<h1 id="adjusted-final-revenue-display">
+<h1 id="adjusted-final-revenue-display" style="display:none">
     $0
 </h1>
 
-<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular">
+<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular" style="display:none">
 
 <script>
     const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
@@ -147,10 +139,10 @@
 
         if (populationData) {
             populationDisplay.textContent = `Population: ${populationData.Population}`;
-            populationDisplay.style.display = 'block'; // Show population display
+            populationDisplay.style.display = 'none'; // Always hide population display
         } else {
             populationDisplay.textContent = 'Population: N/A';
-            populationDisplay.style.display = 'block'; // Show population display
+            populationDisplay.style.display = 'none'; // Always hide population display
         }
     }
 
@@ -179,7 +171,7 @@
 
         const revenueDisplay = document.getElementById('revenue-display');
         revenueDisplay.textContent = `Revenue: ${formatCurrency(totalRevenue)}`;
-        revenueDisplay.style.display = 'block'; // Show revenue display
+        revenueDisplay.style.display = 'none'; // Always hide revenue display
     }
 
     function updateFinalRevenue() {
@@ -193,7 +185,7 @@
 
         const finalRevenueDisplay = document.getElementById('final-revenue-display');
         finalRevenueDisplay.textContent = `Final Revenue: ${formatCurrency(finalRevenue)}`;
-        finalRevenueDisplay.style.display = 'block'; // Show final revenue display
+        finalRevenueDisplay.style.display = 'none'; // Always hide final revenue display
     }
 
     function updateAdjustedFinalRevenue() {
@@ -227,5 +219,3 @@
         return `$${value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     }
 </script>
-
-
