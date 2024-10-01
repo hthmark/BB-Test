@@ -26,11 +26,11 @@
     <!-- Final revenue will be displayed here -->
 </h1>
 
-<h1 id="adjusted-final-revenue-display" style="display:none">
+<h1 id="adjusted-final-revenue-display">
     $0
 </h1>
 
-<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular" style="display:none">
+<input type="submit" value="Estimate Territory" id="calculate-button" class="w-button formbutton calcular">
 
 <script>
     const dataJsonUrl = 'https://raw.githubusercontent.com/hthmark/BB-Test/refs/heads/main/Counties.json';
@@ -129,7 +129,9 @@
     function populateTerritoryInheritance() {
         const territorySelect = document.getElementById('territory-inheritance-select');
         territorySelect.addEventListener('change', () => {
-            document.getElementById('adjusted-final-revenue-display').style.display = 'none';
+            const adjustedFinalRevenueDisplay = document.getElementById('adjusted-final-revenue-display');
+            adjustedFinalRevenueDisplay.textContent = '$0'; // Reset to $0 when selection changes
+            adjustedFinalRevenueDisplay.style.display = 'block'; // Ensure it's visible
         });
     }
 
