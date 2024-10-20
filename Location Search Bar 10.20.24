@@ -1,0 +1,83 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cityInput = document.getElementById('city-input');
+    const searchButton = document.getElementById('search-button');
+    const jobItems = document.querySelectorAll('.job-item');
+    const radius = 25; // Radius in miles
+
+    searchButton.addEventListener('click', function () {
+        const city = cityInput.value.trim();
+        if (!city) {
+            alert('Please enter a city.');
+            return;
+        }
+
+        // Geocode the city to get coordinates using Nominatim
+        geocodeCity(city)
+            .then(coords => {
+                if (!coords) {
+                    alert('City not found. Please try again.');
+                    return;
+                }
+                filterJobsByDistance(coords.lat, coords.lng, radius);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+    });
+
+    // Function to geocode city using Nominatim
+    async function geocodeCity(city) {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)}`);
+        const data = await response.json();
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        } else {
+            return null;
+        }
+    }
+
+    // Function to calculate distance and filter jobs
+    function filterJobsByDistance(userLat, userLng, radius) {
+        jobItems.forEach(item => {
+            const jobLat = parseFloat(item.getAttribute('data-latitude'));
+            const jobLng = parseFloat(item.getAttribute('data-longitude'));
+
+            if (isNaN(jobLat) || isNaN(jobLng)) {
+                item.style.display = 'none';
+                return;
+            }
+
+            const distance = getDistanceFromLatLonInMiles(userLat, userLng, jobLat, jobLng);
+
+            if (distance <= radius) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Function to calculate distance between two coordinates
+    function getDistanceFromLatLonInMiles(lat1, lon1, lat2, lon2) {
+        const R = 3958.8; // Radius of the Earth in miles
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+    }
+});
+</script>
+
