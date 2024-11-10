@@ -1,0 +1,35 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Select all left-column job items
+    const jobItems = document.querySelectorAll('[data-job-id]');
+    
+    // Select all right-column job items
+    const rightColumnItems = document.querySelectorAll('[data-right-job-id]');
+    
+    // Function to show the corresponding job in the right column
+    function showJobDetails(jobId) {
+      rightColumnItems.forEach(rightItem => {
+        if (rightItem.getAttribute('data-right-job-id') === jobId) {
+          rightItem.style.display = 'block';  // Show the matching job details
+        } else {
+          rightItem.style.display = 'none';   // Hide other job details
+        }
+      });
+    }
+
+    // Show the first job details by default when the page loads
+    if (jobItems.length > 0) {
+      const firstJob = jobItems[0];
+      const firstJobId = firstJob.getAttribute('data-job-id');
+      showJobDetails(firstJobId);  // Display the first job in the right column
+    }
+
+    // Add click event listeners to all job items in the left column
+    jobItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const selectedJobId = this.getAttribute('data-job-id');
+        showJobDetails(selectedJobId);  // Show the clicked job's details
+      });
+    });
+  });
+</script>
