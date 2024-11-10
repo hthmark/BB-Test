@@ -1,0 +1,6 @@
+<style>
+  /* Initially hide all items in the right column */
+  [data-right-job-id] {
+    display: none;
+  }
+</style>
