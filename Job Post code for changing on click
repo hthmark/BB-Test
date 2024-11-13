@@ -1,12 +1,21 @@
+<!-- Add this CSS to prevent text selection on job items -->
+<style>
+  /* Prevent text selection on job items */
+  [data-job-id] {
+    user-select: none;
+  }
+</style>
+
+<!-- Add this JavaScript code -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Select all left-column job items
     const jobItems = document.querySelectorAll('[data-job-id]');
     
-    // Select all right-column job items
+    // Select all right-column job details
     const rightColumnItems = document.querySelectorAll('[data-right-job-id]');
     
-    // Function to show the corresponding job in the right column
+    // Function to show the corresponding job details in the right column
     function showJobDetails(jobId) {
       rightColumnItems.forEach(rightItem => {
         if (rightItem.getAttribute('data-right-job-id') === jobId) {
@@ -19,16 +28,23 @@
 
     // Show the first job details by default when the page loads
     if (jobItems.length > 0) {
-      const firstJob = jobItems[0];
-      const firstJobId = firstJob.getAttribute('data-job-id');
+      const firstJobId = jobItems[0].getAttribute('data-job-id');
       showJobDetails(firstJobId);  // Display the first job in the right column
     }
 
     // Add click event listeners to all job items in the left column
     jobItems.forEach(item => {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function(event) {
+        event.preventDefault();    // Prevent default behavior
+        event.stopPropagation();   // Stop event from propagating to parent elements
         const selectedJobId = this.getAttribute('data-job-id');
         showJobDetails(selectedJobId);  // Show the clicked job's details
+      });
+
+      // Prevent default double-click behavior
+      item.addEventListener('dblclick', function(event) {
+        event.preventDefault();    // Prevent default double-click behavior
+        event.stopPropagation();   // Stop the event from bubbling up
       });
     });
   });
